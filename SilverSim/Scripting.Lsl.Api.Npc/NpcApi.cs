@@ -11,6 +11,7 @@ using SilverSim.ServiceInterfaces.Presence;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Asset.Format;
+using SilverSim.Types.Inventory;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -170,7 +171,35 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         [APILevel(APIFlags.OSSL, "osNpcLoadAppearance")]
         public void NpcLoadAppearance(ScriptInstance instance, LSLKey npc, string notecard)
         {
-            throw new NotImplementedException("osNpcLoadAppearance(key, string)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (!TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    return;
+                }
+
+                ObjectPart part = instance.Part;
+                ObjectPartInventoryItem item;
+                AssetData asset;
+                
+                if(!part.Inventory.TryGetValue(notecard, out item))
+                {
+                    instance.ShoutError("Inventory item \"" + notecard + "\" not found");
+                }
+                else if(item.AssetType != AssetType.Notecard)
+                {
+                    instance.ShoutError("Inventory item \"" + notecard + "\" not a Notecard");
+                }
+                else if(!npcAgent.AssetService.TryGetValue(item.AssetID, out asset))
+                {
+                    instance.ShoutError("Could not load asset for inventory item \"" + notecard + "\"");
+                }
+                else
+                {
+                    npcAgent.LoadAppearanceFromNotecard(new Notecard(asset));
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcMoveTo")]
@@ -198,10 +227,47 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             }
         }
 
+        LSLKey SaveAppearance(ScriptInstance instance, NpcAgent agent, string notecard)
+        {
+            ObjectPart part = instance.Part;
+            SceneInterface scene = part.ObjectGroup.Scene;
+            Notecard nc = (Notecard)agent.Appearance;
+            AssetData asset = nc.Asset();
+            asset.Name = "Saved Appearance";
+            asset.ID = UUID.Random;
+            scene.AssetService.Store(asset);
+
+            ObjectPartInventoryItem item = new ObjectPartInventoryItem();
+            item.AssetID = asset.ID;
+            item.AssetType = AssetType.Notecard;
+            item.Creator = part.Owner;
+            item.ParentFolderID = part.ID;
+            item.InventoryType = InventoryType.Notecard;
+            item.LastOwner = part.Owner;
+            item.Permissions.Base = InventoryPermissionsMask.Every;
+            item.Permissions.Current = InventoryPermissionsMask.Every;
+            item.Permissions.Group = InventoryPermissionsMask.None;
+            item.Permissions.NextOwner = InventoryPermissionsMask.All;
+            item.Permissions.EveryOne = InventoryPermissionsMask.None;
+
+            item.Name = notecard;
+            item.Description = "Saved Appearance";
+            part.Inventory.Add(item);
+            return UUID.Zero;
+        }
+
         [APILevel(APIFlags.OSSL, "osNpcSaveAppearance")]
         public LSLKey NpcSaveAppearance(ScriptInstance instance, LSLKey npc, string notecard)
         {
-            throw new NotImplementedException("osNpcSaveAppearance(key, string)");
+            NpcAgent agent;
+            lock(instance)
+            {
+                if(TryGetNpc(instance, npc.AsUUID, out agent))
+                {
+                    return SaveAppearance(instance, agent, notecard);
+                }
+                return UUID.Zero;
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSay")]
