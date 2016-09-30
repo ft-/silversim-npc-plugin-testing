@@ -2,10 +2,17 @@
 // GNU Affero General Public License v3
 
 using SilverSim.Main.Common;
+using SilverSim.Scene.Npc;
 using SilverSim.Scene.Types.Agent;
+using SilverSim.Scene.Types.Object;
+using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
+using SilverSim.ServiceInterfaces.Presence;
 using SilverSim.Types;
+using SilverSim.Types.Asset;
+using SilverSim.Types.Asset.Format;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace SilverSim.Scripting.Lsl.Api.Npc
@@ -15,6 +22,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
     [Description("OSSL Npc API")]
     public class NpcApi : IScriptApi, IPlugin
     {
+        NpcManager m_NpcManager;
         public NpcApi()
         {
 
@@ -22,7 +30,12 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
 
         public void Startup(ConfigurationLoader loader)
         {
-            /* intentionally left empty */
+            List<NpcManager> npcManagers = loader.GetServicesByValue<NpcManager>();
+            if(npcManagers.Count == 0)
+            {
+                throw new ConfigurationLoader.ConfigurationErrorException("No NPC manager configured");
+            }
+            m_NpcManager = npcManagers[0];
         }
 
         [APILevel(APIFlags.OSSL)]
@@ -49,11 +62,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         [APILevel(APIFlags.OSSL, "osNpcCreate")]
         public LSLKey NpcCreate(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom)
         {
-            lock(instance)
-            {
-                ((Script)instance).CheckThreatLevel("osNpcCreate", Script.ThreatLevelType.High);
-            }
-            throw new NotImplementedException("osNpcCreate(string, string, vector, string)");
+            return NpcCreate(instance, firstName, lastName, position, cloneFrom, 0);
         }
 
         [APILevel(APIFlags.OSSL, "osNpcCreate")]
@@ -62,26 +71,100 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             lock (instance)
             {
                 ((Script)instance).CheckThreatLevel("osNpcCreate", Script.ThreatLevelType.High);
+
+                ObjectPart part = instance.Part;
+                SceneInterface scene = instance.Part.ObjectGroup.Scene;
+                ObjectPartInventoryItem resitem;
+                if (!part.Inventory.TryGetValue(cloneFrom, out resitem))
+                {
+                    instance.ShoutError("Inventory item not found");
+                }
+                else if(resitem.AssetType != AssetType.Notecard)
+                {
+                    instance.ShoutError("Inventory item not a notecard");
+                }
+                AssetData data = scene.AssetService[resitem.ID];
+                Notecard nc = new Notecard(data);
+                UGI group = (options & OS_NPC_OBJECT_GROUP) != 0 ? part.Group : UGI.Unknown;
+                NpcOptions npcOptions = NpcOptions.None;
+                if((options & OS_NPC_SENSE_AS_AGENT) != 0)
+                {
+                    npcOptions |= NpcOptions.SenseAsAgent;
+                }
+                NpcAgent agent = m_NpcManager.CreateNpc(scene.ID, part.Owner, group, firstName, lastName, position, nc, npcOptions);
+                return agent.ID;
             }
-            throw new NotImplementedException("osNpcCreate(string, string, vector, string, integer)");
+        }
+
+        bool TryGetNpc(ScriptInstance instance, UUID npc, out NpcAgent agent)
+        {
+            ObjectPart part = instance.Part;
+
+            if (!m_NpcManager.TryGetNpc(npc.AsUUID, out agent))
+            {
+                instance.ShoutError("NPC not found");
+                return false;
+            }
+            else if (agent.NpcOwner != UUI.Unknown && agent.NpcOwner != part.Owner)
+            {
+                instance.ShoutError("NPC not owned by you");
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcGetPos")]
         public Vector3 NpcGetPos(ScriptInstance instance, LSLKey npc)
         {
-            throw new NotImplementedException("osNpcGetPos(key)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (!TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    return Vector3.Zero;
+                }
+                else
+                {
+                    return npcAgent.GlobalPosition;
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcGetRot")]
         public Quaternion NpcGetRot(ScriptInstance instance, LSLKey npc)
         {
-            throw new NotImplementedException("osNpcGetRot(key)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (!TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    return Quaternion.Identity;
+                }
+                else
+                {
+                    return npcAgent.GlobalRotation;
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcGetOwner")]
         public LSLKey NpcGetOwner(ScriptInstance instance, LSLKey npc)
         {
-            throw new NotImplementedException("osNpcGetOwner(key)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (!m_NpcManager.TryGetNpc(npc.AsUUID, out npcAgent))
+                {
+                    return UUID.Zero;
+                }
+                else
+                {
+                    return npcAgent.NpcOwner.ID;
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcLoadAppearance")]
@@ -105,7 +188,14 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         [APILevel(APIFlags.OSSL, "osNpcRemove")]
         public void NpcRemove(ScriptInstance instance, LSLKey npc)
         {
-            throw new NotImplementedException("osNpcRemove(key)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    m_NpcManager.RemoveNpc(npcAgent.ID);
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSaveAppearance")]
@@ -117,55 +207,119 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         [APILevel(APIFlags.OSSL, "osNpcSay")]
         public void NpcSay(ScriptInstance instance, LSLKey npc, string message)
         {
-            throw new NotImplementedException("osNpcSay(key, string)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoSay(message);
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSay")]
         public void NpcSay(ScriptInstance instance, LSLKey npc, int channel, string message)
         {
-            throw new NotImplementedException("osNpcSay(key, integer, string)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoSay(channel, message);
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcShout")]
         public void NpcShout(ScriptInstance instance, LSLKey npc, string message)
         {
-            throw new NotImplementedException("osNpcShout(key, string)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoShout(message);
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcShout")]
         public void NpcShout(ScriptInstance instance, LSLKey npc, int channel, string message)
         {
-            throw new NotImplementedException("osNpcShout(key, integer, string)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoShout(channel, message);
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcWhisper")]
         public void NpcWhisper(ScriptInstance instance, LSLKey npc, string message)
         {
-            throw new NotImplementedException("osNpcWhisper(key, string)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoWhisper(message);
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcWhisper")]
         public void NpcWhisper(ScriptInstance instance, LSLKey npc, int channel, string message)
         {
-            throw new NotImplementedException("osNpcWhisper(key, integer, string)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoWhisper(channel, message);
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSetRot")]
         public void NpcSetRot(ScriptInstance instance, LSLKey npc, Quaternion rot)
         {
-            throw new NotImplementedException("osNpcSetRot(key, rotation)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.GlobalRotation = rot;
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSit")]
         public void NpcSit(ScriptInstance instance, LSLKey npc, LSLKey target, int options)
         {
-            throw new NotImplementedException("osNpcSit(key, key, integer)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+#warning options not handled yet
+                    npcAgent.DoSit(target.AsUUID);
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcStand")]
         public void NpcStand(ScriptInstance instance, LSLKey npc)
         {
-            throw new NotImplementedException("osNpcStand(key)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.UnSit();
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osNpcStopMoveToTarget")]
@@ -191,7 +345,14 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         [APILevel(APIFlags.OSSL, "osNpcTouch")]
         public void NpcTouch(ScriptInstance instance, LSLKey npc, LSLKey objectKey, int linkNum)
         {
-            throw new NotImplementedException("osNpcTouch(key, key, integer)");
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoTouch(objectKey, linkNum);
+                }
+            }
         }
     }
 }

@@ -24,6 +24,8 @@
   <Reference name="SilverSim.Scene.ServiceInterfaces" localCopy="false"/>
   <Reference name="SilverSim.Scripting.Common" localCopy="false"/>
   <Reference name="SilverSim.Main.Common" localCopy="false"/>
+  <Reference name="SilverSim.Scene.Agent" localCopy="false"/>
+  <Reference name="SilverSim.Scene.Npc" path="../../../bin/plugins/" localCopy="false"/>
   <Reference name="SilverSim.Viewer.Messages" localCopy="false"/>
   <Reference name="SilverSim.Scripting.Lsl" localCopy="false"/>
   <Reference name="Nini" path="../../bin/" localCopy="false"/>
