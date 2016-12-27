@@ -420,5 +420,298 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 }
             }
         }
+
+        [APILevel(APIFlags.ASSL, "npcGetItemsInFolder")]
+        public AnArray NpcGetItemsInFolder(ScriptInstance instance, LSLKey npc, LSLKey folder)
+        {
+            NpcAgent npcAgent;
+            AnArray result = new AnArray();
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    foreach(InventoryItem item in npcAgent.InventoryService.Folder.GetItems(npc.AsUUID, folder.AsUUID))
+                    {
+                        result.Add(item.ID);
+                        result.Add(item.Name);
+                    }
+                }
+            }
+            return result;
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetFoldersInFolder")]
+        public AnArray NpcGetFoldersInFolder(ScriptInstance instance, LSLKey npc, LSLKey folderid)
+        {
+            NpcAgent npcAgent;
+            AnArray result = new AnArray();
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    foreach (InventoryFolder folder in npcAgent.InventoryService.Folder.GetFolders(npc.AsUUID, folderid.AsUUID))
+                    {
+                        result.Add(folder.ID);
+                        result.Add(folder.Name);
+                    }
+                }
+            }
+            return result;
+        }
+
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_NAME = 1;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_DESCRIPTION = 2;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_TYPE = 3;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_ASSET_TYPE = 4;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_ASSET_ID = 5;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_PARENT_FOLDER_ID = 6;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_BASE_MASK = 7;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_CURRENT_MASK = 8;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_EVERYONE_MASK = 9;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_GROUP_MASK = 10;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_NEXTOWNER_MASK = 11;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_FLAGS = 12;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_CREATOR = 13;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_CREATIONDATE = 14;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_VERSION = 15;
+
+        public LSLKey NpcGetFolderForType(ScriptInstance instance, LSLKey npc, AssetType type)
+        {
+            NpcAgent npcAgent;
+            UUID result = UUID.Zero;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    InventoryFolder folder;
+                    if (npcAgent.InventoryService.Folder.TryGetValue(npc.AsUUID, type, out folder))
+                    {
+                        result = folder.ID;
+                    }
+                }
+            }
+            return result;
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetRootFolder")]
+        public LSLKey NpcGetRootFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.RootFolder);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetClothingFolder")]
+        public LSLKey NpcGetClothingFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.Clothing);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetBodypartsFolder")]
+        public LSLKey NpcGetBodypartsFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.Bodypart);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetObjectsFolder")]
+        public LSLKey NpcGetObjectsFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.Object);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetNotecardsFolder")]
+        public LSLKey NpcGetNotecardsFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.Notecard);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetScriptsFolder")]
+        public LSLKey NpcGetScriptsFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.LSLText);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetTexturesFolder")]
+        public LSLKey NpcGetTexturesFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.Texture);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetSoundsFolder")]
+        public LSLKey NpcGetSoundsFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.Sound);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetLandmarksFolder")]
+        public LSLKey NpcGetLandmarksFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.Landmark);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetAnimationsFolder")]
+        public LSLKey NpcGetAnimationsFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.Animation);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetGesturesFolder")]
+        public LSLKey NpcGetGesturesFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.Gesture);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetCallingcardsFolder")]
+        public LSLKey NpcGetCallingcardsFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.CallingCard);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetTrashFolder")]
+        public LSLKey NpcGetTrashFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.TrashFolder);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetLostAndFoundFolder")]
+        public LSLKey NpcGetLostAndFoundFolder(ScriptInstance instance, LSLKey npc)
+        {
+            return NpcGetFolderForType(instance, npc, AssetType.LostAndFoundFolder);
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetItemData")]
+        public AnArray NpcGetItemData(ScriptInstance instance, LSLKey npc, LSLKey itemid, AnArray paralist)
+        {
+            NpcAgent npcAgent;
+            AnArray result = new AnArray();
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    InventoryItem item;
+                    if(npcAgent.InventoryService.Item.TryGetValue(npc.AsUUID, itemid.AsUUID, out item))
+                    {
+                        foreach(IValue iv in paralist)
+                        {
+                            switch(iv.AsInt)
+                            {
+                                case NPC_INVENTORY_NAME:
+                                    result.Add(item.Name);
+                                    break;
+
+                                case NPC_INVENTORY_DESCRIPTION:
+                                    result.Add(item.Description);
+                                    break;
+
+                                case NPC_INVENTORY_TYPE:
+                                    result.Add((int)item.InventoryType);
+                                    break;
+
+                                case NPC_INVENTORY_ASSET_TYPE:
+                                    result.Add((int)item.AssetType);
+                                    break;
+
+                                case NPC_INVENTORY_PARENT_FOLDER_ID:
+                                    result.Add(new LSLKey(item.ParentFolderID));
+                                    break;
+
+                                case NPC_INVENTORY_BASE_MASK:
+                                    result.Add((int)item.Permissions.Base);
+                                    break;
+
+                                case NPC_INVENTORY_CURRENT_MASK:
+                                    result.Add((int)item.Permissions.Current);
+                                    break;
+
+                                case NPC_INVENTORY_EVERYONE_MASK:
+                                    result.Add((int)item.Permissions.EveryOne);
+                                    break;
+
+                                case NPC_INVENTORY_GROUP_MASK:
+                                    result.Add((int)item.Permissions.Group);
+                                    break;
+
+                                case NPC_INVENTORY_NEXTOWNER_MASK:
+                                    result.Add((int)item.Permissions.NextOwner);
+                                    break;
+
+                                case NPC_INVENTORY_FLAGS:
+                                    result.Add((int)item.Flags);
+                                    break;
+
+                                case NPC_INVENTORY_CREATOR:
+                                    result.Add(new LSLKey(item.Creator.ID));
+                                    break;
+
+                                case NPC_INVENTORY_CREATIONDATE:
+                                    result.Add(item.CreationDate.AsULong);
+                                    break;
+
+                                default:
+                                    result.Add(string.Empty);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        [APILevel(APIFlags.ASSL, "npcGetFolderData")]
+        public AnArray NpcGetFolderData(ScriptInstance instance, LSLKey npc, LSLKey folderid, AnArray paralist)
+        {
+            NpcAgent npcAgent;
+            AnArray result = new AnArray();
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    InventoryFolder folder;
+                    if (npcAgent.InventoryService.Folder.TryGetValue(npc.AsUUID, folderid.AsUUID, out folder))
+                    {
+                        foreach (IValue iv in paralist)
+                        {
+                            switch (iv.AsInt)
+                            {
+                                case NPC_INVENTORY_NAME:
+                                    result.Add(folder.Name);
+                                    break;
+
+                                case NPC_INVENTORY_TYPE:
+                                    result.Add((int)folder.InventoryType);
+                                    break;
+
+                                case NPC_INVENTORY_VERSION:
+                                    result.Add(folder.Version);
+                                    break;
+
+                                case NPC_INVENTORY_PARENT_FOLDER_ID:
+                                    result.Add(new LSLKey(folder.ParentFolderID));
+                                    break;
+
+                                default:
+                                    result.Add(string.Empty);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }
     }
 }
