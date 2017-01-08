@@ -12,6 +12,7 @@ using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Asset.Format;
 using SilverSim.Types.Inventory;
+using SilverSim.Types.Profile;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -392,6 +393,56 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         public void NpcStopMoveToTarget(ScriptInstance instance, LSLKey npc)
         {
             throw new NotImplementedException("osNpcStopMoveToTarget(key)");
+        }
+
+        [APILevel(APIFlags.OSSL, "osNpcSetProfileAbout")]
+        public void NpcSetProfileAbout(ScriptInstance instance, LSLKey npc, string text)
+        {
+            lock(instance)
+            {
+                NpcAgent agent;
+                if (TryGetNpc(instance, npc, out agent))
+                {
+                    ProfileProperties props;
+                    props = agent.ProfileService.Properties[agent.Owner];
+                    props.AboutText = text;
+                    agent.ProfileService.Properties[agent.Owner, ServiceInterfaces.Profile.ProfileServiceInterface.PropertiesUpdateFlags.Properties] = props;
+                }
+            }
+        }
+
+        [APILevel(APIFlags.OSSL, "osNpcSetProfileWebURL")]
+        public void NpcSetProfileWebURL(ScriptInstance instance, LSLKey npc, string url)
+        {
+            lock(instance)
+            {
+                NpcAgent agent;
+                if(TryGetNpc(instance, npc, out agent))
+                {
+                    ProfileProperties props;
+                    props = agent.ProfileService.Properties[agent.Owner];
+                    props.WebUrl = url;
+                    agent.ProfileService.Properties[agent.Owner, ServiceInterfaces.Profile.ProfileServiceInterface.PropertiesUpdateFlags.Properties] = props;
+                }
+            }
+        }
+
+        [APILevel(APIFlags.OSSL, "osNpcSetProfileImage")]
+        public void NpcSetProfileImage(ScriptInstance instance, LSLKey npc, string image)
+        {
+            UUID textureID = instance.GetTextureAssetID(image);
+
+            lock (instance)
+            {
+                NpcAgent agent;
+                if (TryGetNpc(instance, npc, out agent))
+                {
+                    ProfileProperties props;
+                    props = agent.ProfileService.Properties[agent.Owner];
+                    props.ImageID = textureID;
+                    agent.ProfileService.Properties[agent.Owner, ServiceInterfaces.Profile.ProfileServiceInterface.PropertiesUpdateFlags.Properties] = props;
+                }
+            }
         }
 
         [APILevel(APIFlags.OSSL, "osIsNpc")]
