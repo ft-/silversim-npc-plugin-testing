@@ -206,7 +206,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                                 {
                                     NpcSensorEvent ev = new NpcSensorEvent();
                                     ev.NpcId = kvp.Value.Npc.ID;
-                                    ev.Detected = new List<DetectInfo>(kvp.Value.SensorHits.Values);
+                                    ev.Detected = GetDistanceSorted(kvp.Value.SensePoint, kvp.Value.SensorHits.Values);
                                     kvp.Value.Instance.PostEvent(ev);
                                 }
                                 else
@@ -303,6 +303,30 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 }
             }
 
+            List<DetectInfo> GetDistanceSorted(Vector3 basePos, ICollection<DetectInfo> unsortedCollection)
+            {
+                List<DetectInfo> list = new List<DetectInfo>();
+                foreach (DetectInfo input_di in unsortedCollection)
+                {
+                    double input_dist = (basePos - input_di.Position).LengthSquared;
+                    int beforePos = 0;
+
+                    for (beforePos = 0; beforePos < list.Count; ++beforePos)
+                    {
+                        DetectInfo output_di = list[beforePos];
+                        double cur_dist = (basePos - output_di.Position).LengthSquared;
+                        if (cur_dist > input_dist)
+                        {
+                            break;
+                        }
+                    }
+
+                    list.Insert(beforePos, input_di);
+                }
+
+                return list;
+            }
+
             public void StartSensor(SensorInfo sensor)
             {
                 sensor.UpdateSenseLocation();
@@ -315,7 +339,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 {
                     NpcSensorEvent ev = new NpcSensorEvent();
                     ev.NpcId = sensor.Npc.ID;
-                    ev.Detected = new List<DetectInfo>(sensor.SensorHits.Values);
+                    ev.Detected = GetDistanceSorted(sensor.SensePoint, sensor.SensorHits.Values);
                     sensor.Instance.PostEvent(ev);
                 }
                 else
