@@ -668,6 +668,34 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             return NpcGetFolderForType(instance, npc, AssetType.LostAndFoundFolder);
         }
 
+        [APILevel(APIFlags.ASSL, "npcListenIM")]
+        public void NpcListenIM(ScriptInstance instance, LSLKey npc, int maptochannel)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent) && npcAgent.IsInScene(part.ObjectGroup.Scene))
+                {
+                    npcAgent.ListenIM(part.ID, instance.Item.ID, maptochannel);
+                }
+            }
+        }
+
+        [APILevel(APIFlags.ASSL, "npcUnlistenIM")]
+        public void NpcUnlistenIM(ScriptInstance instance, LSLKey npc)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent) && npcAgent.IsInScene(part.ObjectGroup.Scene))
+                {
+                    npcAgent.UnlistenIM(part.ID, instance.Item.ID);
+                }
+            }
+        }
+
         [APILevel(APIFlags.ASSL, "npcListen")]
         public void NpcListen(ScriptInstance instance, LSLKey npc, int maptochannel)
         {
@@ -827,6 +855,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 ObjectPart part = instance.Part;
                 SceneInterface scene = part.ObjectGroup.Scene;
                 m_NpcManager.UnlistenAsNpc(scene.ID, part.ID, instance.Item.ID);
+                m_NpcManager.UnlistenIM(scene.ID, part.ID, instance.Item.ID);
             }
         }
     }
