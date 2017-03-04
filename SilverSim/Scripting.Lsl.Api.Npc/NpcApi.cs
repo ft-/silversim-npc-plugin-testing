@@ -63,12 +63,14 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         public const int OS_NPC_RUNNING = 4;
 
         [APILevel(APIFlags.OSSL, "osNpcCreate")]
+        [APILevel(APIFlags.ASSL, "npcCreate")]
         public LSLKey NpcCreate(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom)
         {
             return NpcCreate(instance, firstName, lastName, position, cloneFrom, 0);
         }
 
         [APILevel(APIFlags.OSSL, "osNpcCreate")]
+        [APILevel(APIFlags.ASSL, "npcCreate")]
         public LSLKey NpcCreate(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom, int options)
         {
             lock (instance)
@@ -120,6 +122,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcGetPos")]
+        [APILevel(APIFlags.ASSL, "npcGetPos")]
         public Vector3 NpcGetPos(ScriptInstance instance, LSLKey npc)
         {
             NpcAgent npcAgent;
@@ -137,6 +140,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcGetRot")]
+        [APILevel(APIFlags.ASSL, "npcGetRot")]
         public Quaternion NpcGetRot(ScriptInstance instance, LSLKey npc)
         {
             NpcAgent npcAgent;
@@ -154,6 +158,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcGetOwner")]
+        [APILevel(APIFlags.ASSL, "npcGetOwner")]
         public LSLKey NpcGetOwner(ScriptInstance instance, LSLKey npc)
         {
             NpcAgent npcAgent;
@@ -171,6 +176,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcLoadAppearance")]
+        [APILevel(APIFlags.ASSL, "npcLoadAppearance")]
         public void NpcLoadAppearance(ScriptInstance instance, LSLKey npc, string notecard)
         {
             NpcAgent npcAgent;
@@ -205,18 +211,21 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcMoveTo")]
+        [APILevel(APIFlags.ASSL, "npcMoveTo")]
         public void NpcMoveTo(ScriptInstance instance, LSLKey npc, Vector3 position)
         {
             throw new NotImplementedException("osNpcMoveTo(key, vector)");
         }
 
         [APILevel(APIFlags.OSSL, "osNpcMoveToTarget")]
+        [APILevel(APIFlags.ASSL, "npcMoveToTarget")]
         public void NpcMoveToTarget(ScriptInstance instance, LSLKey npc, Vector3 target, int options)
         {
             throw new NotImplementedException("osNpcMoveToTarget(key, vector, integer)");
         }
 
         [APILevel(APIFlags.OSSL, "osNpcRemove")]
+        [APILevel(APIFlags.ASSL, "npcRemove")]
         public void NpcRemove(ScriptInstance instance, LSLKey npc)
         {
             NpcAgent npcAgent;
@@ -259,6 +268,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSaveAppearance")]
+        [APILevel(APIFlags.ASSL, "npcSaveAppearance")]
         public LSLKey NpcSaveAppearance(ScriptInstance instance, LSLKey npc, string notecard)
         {
             NpcAgent agent;
@@ -272,7 +282,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             }
         }
 
-        [APILevel(APIFlags.ASSL, "osNpcSendInstantMessage")]
+        [APILevel(APIFlags.ASSL, "npcSendInstantMessage")]
         public void NpcSendInstantMessage(ScriptInstance instance, LSLKey npc, LSLKey user, string message)
         {
             NpcAgent npcAgent;
@@ -297,6 +307,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSay")]
+        [APILevel(APIFlags.ASSL, "npcSay")]
         public void NpcSay(ScriptInstance instance, LSLKey npc, string message)
         {
             NpcAgent npcAgent;
@@ -310,6 +321,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSay")]
+        [APILevel(APIFlags.ASSL, "npcSay")]
         public void NpcSay(ScriptInstance instance, LSLKey npc, int channel, string message)
         {
             NpcAgent npcAgent;
@@ -323,6 +335,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcShout")]
+        [APILevel(APIFlags.ASSL, "npcShout")]
         public void NpcShout(ScriptInstance instance, LSLKey npc, string message)
         {
             NpcAgent npcAgent;
@@ -336,6 +349,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcShout")]
+        [APILevel(APIFlags.ASSL, "npcShout")]
         public void NpcShout(ScriptInstance instance, LSLKey npc, int channel, string message)
         {
             NpcAgent npcAgent;
@@ -349,6 +363,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcWhisper")]
+        [APILevel(APIFlags.ASSL, "npcWhisper")]
         public void NpcWhisper(ScriptInstance instance, LSLKey npc, string message)
         {
             NpcAgent npcAgent;
@@ -362,6 +377,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcWhisper")]
+        [APILevel(APIFlags.ASSL, "npcWhisper")]
         public void NpcWhisper(ScriptInstance instance, LSLKey npc, int channel, string message)
         {
             NpcAgent npcAgent;
@@ -375,6 +391,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSetRot")]
+        [APILevel(APIFlags.ASSL, "npcSetRot")]
         public void NpcSetRot(ScriptInstance instance, LSLKey npc, Quaternion rot)
         {
             NpcAgent npcAgent;
@@ -388,6 +405,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSit")]
+        [APILevel(APIFlags.ASSL, "npcSit")]
         public void NpcSit(ScriptInstance instance, LSLKey npc, LSLKey target, int options)
         {
             NpcAgent npcAgent;
@@ -402,6 +420,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcStand")]
+        [APILevel(APIFlags.ASSL, "npcStand")]
         public void NpcStand(ScriptInstance instance, LSLKey npc)
         {
             NpcAgent npcAgent;
@@ -421,6 +440,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSetProfileAbout")]
+        [APILevel(APIFlags.ASSL, "npcSetProfileAbout")]
         public void NpcSetProfileAbout(ScriptInstance instance, LSLKey npc, string text)
         {
             lock(instance)
@@ -437,6 +457,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSetProfileWebURL")]
+        [APILevel(APIFlags.ASSL, "npcSetProfileWebURL")]
         public void NpcSetProfileWebURL(ScriptInstance instance, LSLKey npc, string url)
         {
             lock(instance)
@@ -453,6 +474,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcSetProfileImage")]
+        [APILevel(APIFlags.ASSL, "npcSetProfileImage")]
         public void NpcSetProfileImage(ScriptInstance instance, LSLKey npc, string image)
         {
             UUID textureID = instance.GetTextureAssetID(image);
@@ -485,6 +507,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcTouch")]
+        [APILevel(APIFlags.ASSL, "npcTouch")]
         public void NpcTouch(ScriptInstance instance, LSLKey npc, LSLKey objectKey, int linkNum)
         {
             NpcAgent npcAgent;
