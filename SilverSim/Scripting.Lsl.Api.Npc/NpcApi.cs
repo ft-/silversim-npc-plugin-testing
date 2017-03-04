@@ -11,6 +11,7 @@ using SilverSim.ServiceInterfaces.Presence;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
 using SilverSim.Types.Asset.Format;
+using SilverSim.Types.IM;
 using SilverSim.Types.Inventory;
 using SilverSim.Types.Profile;
 using System;
@@ -268,6 +269,30 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                     return SaveAppearance(instance, agent, notecard);
                 }
                 return UUID.Zero;
+            }
+        }
+
+        [APILevel(APIFlags.ASSL, "osNpcSendInstantMessage")]
+        public void NpcSendInstantMessage(ScriptInstance instance, LSLKey npc, LSLKey user, string message)
+        {
+            NpcAgent npcAgent;
+            IAgent agent;
+            lock(instance)
+            {
+                SceneInterface scene = instance.Part.ObjectGroup.Scene;
+                if(TryGetNpc(instance, npc.AsUUID, out npcAgent) &&
+                    scene.Agents.TryGetValue(user.AsUUID, out agent))
+                {
+                    GridInstantMessage gim = new GridInstantMessage();
+                    gim.FromAgent = npcAgent.Owner;
+                    gim.Dialog = GridInstantMessageDialog.MessageFromAgent;
+                    gim.FromGroup = UGI.Unknown;
+                    gim.IMSessionID = UUID.Random;
+                    gim.Message = message;
+                    gim.Position = npcAgent.GlobalPosition;
+                    gim.RegionID = scene.ID;
+                    agent.IMSend(gim);
+                }
             }
         }
 
