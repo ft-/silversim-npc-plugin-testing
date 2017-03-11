@@ -10,6 +10,6 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor.ScriptEvents
     public class NpcNoSensorEvent : IScriptEvent
     {
         [TranslatedScriptEventParameter(0)]
-        public UUID NpcId;
+        public LSLKey NpcId;
     }
 }

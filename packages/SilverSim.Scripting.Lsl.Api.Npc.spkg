@@ -5,7 +5,7 @@
 		<source>SilverSim.Scripting.Lsl.Api.Npc:PackageConfig.ini</source>
 		<use-if-started-as>bare</use-if-started-as>
 		<use-if-started-as>simulator</use-if-started-as>
-		<use-if-started-as>standalone></use-if-started-as>
+		<use-if-started-as>standalone</use-if-started-as>
 	</default-configuration>
 	<dependencies>
 		<dependency name="SilverSim"/>
