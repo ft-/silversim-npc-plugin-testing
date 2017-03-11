@@ -1,14 +1,10 @@
 <?xml version="1.0"?>
 <package>
 	<name>Scripting.Lsl.Api.NpcSensor</name>
-	<version>development</version>
-	<sha256></sha256>
-	<interface-version></interface-version>
-	<default-configuration></default-configuration>
 	<dependencies>
 		<dependency name="SilverSim.Scene.Npc"/>
 	</dependencies>
 	<files>
-		<file name="bin/plugins/SilverSim.Scripting.Lsl.Api.NpcSensor.dll" version="development"/>
+		<file name="bin/plugins/SilverSim.Scripting.Lsl.Api.NpcSensor.dll"/>
 	</files>
 </package>

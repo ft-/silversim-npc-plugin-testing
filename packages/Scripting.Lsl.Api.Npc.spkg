@@ -1,14 +1,10 @@
 <?xml version="1.0"?>
 <package>
 	<name>Scripting.Lsl.Api.Npc</name>
-	<version></version>
-	<sha256></sha256>
-	<interface-version></interface-version>
-	<default-configuration></default-configuration>
 	<dependencies>
 		<dependency name="SilverSim"/>
 	</dependencies>
 	<files>
-		<file name="bin/plugins/SilverSim.Scripting.Lsl.Api.Npc.dll" version="development"/>
+		<file name="bin/plugins/SilverSim.Scripting.Lsl.Api.Npc.dll"/>
 	</files>
 </package>
