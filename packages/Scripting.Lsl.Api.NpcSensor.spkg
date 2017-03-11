@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <package>
-	<name>Scripting.Lsl.Api.NpcSensor</name>
+	<name>SilverSim.Scripting.Lsl.Api.NpcSensor</name>
 	<dependencies>
 		<dependency name="SilverSim.Scene.Npc"/>
+		<dependency name="SilverSim.Scripting.Lsl.Api.NpcSensor"/>
 	</dependencies>
 	<files>
 		<file name="bin/plugins/SilverSim.Scripting.Lsl.Api.NpcSensor.dll"/>
