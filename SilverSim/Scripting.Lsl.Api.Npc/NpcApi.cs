@@ -82,6 +82,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
 
         [APILevel(APIFlags.OSSL, "osNpcCreate")]
         [APILevel(APIFlags.ASSL, "npcCreate")]
+        [ThreatLevelRequired(ThreatLevel.High, "osNpcCreate")]
         public LSLKey NpcCreate(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom)
         {
             return NpcCreate(instance, firstName, lastName, position, cloneFrom, 0);
