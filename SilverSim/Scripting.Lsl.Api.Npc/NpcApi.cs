@@ -266,21 +266,23 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             asset.ID = UUID.Random;
             scene.AssetService.Store(asset);
 
-            ObjectPartInventoryItem item = new ObjectPartInventoryItem();
-            item.AssetID = asset.ID;
-            item.AssetType = AssetType.Notecard;
-            item.Creator = part.Owner;
-            item.ParentFolderID = part.ID;
-            item.InventoryType = InventoryType.Notecard;
-            item.LastOwner = part.Owner;
+            ObjectPartInventoryItem item = new ObjectPartInventoryItem()
+            {
+                AssetID = asset.ID,
+                AssetType = AssetType.Notecard,
+                Creator = part.Owner,
+                ParentFolderID = part.ID,
+                InventoryType = InventoryType.Notecard,
+                LastOwner = part.Owner,
+                Name = notecard,
+                Description = "Saved Appearance"
+            };
             item.Permissions.Base = InventoryPermissionsMask.Every;
             item.Permissions.Current = InventoryPermissionsMask.Every;
             item.Permissions.Group = InventoryPermissionsMask.None;
             item.Permissions.NextOwner = InventoryPermissionsMask.All;
             item.Permissions.EveryOne = InventoryPermissionsMask.None;
 
-            item.Name = notecard;
-            item.Description = "Saved Appearance";
             part.Inventory.Add(item);
             return UUID.Zero;
         }
@@ -311,14 +313,16 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 if(TryGetNpc(instance, npc.AsUUID, out npcAgent) &&
                     scene.Agents.TryGetValue(user.AsUUID, out agent))
                 {
-                    GridInstantMessage gim = new GridInstantMessage();
-                    gim.FromAgent = npcAgent.Owner;
-                    gim.Dialog = GridInstantMessageDialog.MessageFromAgent;
-                    gim.FromGroup = UGI.Unknown;
-                    gim.IMSessionID = UUID.Random;
-                    gim.Message = message;
-                    gim.Position = npcAgent.GlobalPosition;
-                    gim.RegionID = scene.ID;
+                    GridInstantMessage gim = new GridInstantMessage()
+                    {
+                        FromAgent = npcAgent.Owner,
+                        Dialog = GridInstantMessageDialog.MessageFromAgent,
+                        FromGroup = UGI.Unknown,
+                        IMSessionID = UUID.Random,
+                        Message = message,
+                        Position = npcAgent.GlobalPosition,
+                        RegionID = scene.ID
+                    };
                     agent.IMSend(gim);
                 }
             }
