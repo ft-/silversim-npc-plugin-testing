@@ -32,6 +32,9 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor.ScriptEvents
         public LSLKey NpcId;
         public List<DetectInfo> Detected { get; set; }
         [TranslatedScriptEventParameter(1)]
-        public int NumDetected { get { return Detected.Count; } }
+        public int NumDetected
+        {
+            get { return Detected.Count; }
+        }
     }
 }

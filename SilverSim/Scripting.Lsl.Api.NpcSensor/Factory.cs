@@ -27,14 +27,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
     [PluginName("LSL_NpcSensor")]
     public sealed class Factory : IPluginFactory
     {
-        public Factory()
-        {
-
-        }
-
-        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection)
-        {
-            return new NpcSensorApi();
-        }
+        public IPlugin Initialize(ConfigurationLoader loader, IConfig ownSection) =>
+            new NpcSensorApi();
     }
 }

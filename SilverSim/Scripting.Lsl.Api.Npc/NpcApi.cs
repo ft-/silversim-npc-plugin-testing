@@ -43,11 +43,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
     [Description("OSSL Npc API")]
     public class NpcApi : IScriptApi, IPlugin
     {
-        NpcManager m_NpcManager;
-        public NpcApi()
-        {
-
-        }
+        private NpcManager m_NpcManager;
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -83,10 +79,8 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         [APILevel(APIFlags.OSSL, "osNpcCreate")]
         [APILevel(APIFlags.ASSL, "npcCreate")]
         [ThreatLevelRequired(ThreatLevel.High, "osNpcCreate")]
-        public LSLKey NpcCreate(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom)
-        {
-            return NpcCreate(instance, firstName, lastName, position, cloneFrom, 0);
-        }
+        public LSLKey NpcCreate(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom) =>
+            NpcCreate(instance, firstName, lastName, position, cloneFrom, 0);
 
         [APILevel(APIFlags.OSSL, "osNpcCreate")]
         [APILevel(APIFlags.ASSL, "npcCreate")]
@@ -107,9 +101,9 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                     instance.ShoutError("Inventory item not a notecard");
                 }
                 AssetData data = scene.AssetService[resitem.ID];
-                Notecard nc = new Notecard(data);
+                var nc = new Notecard(data);
                 UGI group = (options & OS_NPC_OBJECT_GROUP) != 0 ? part.Group : UGI.Unknown;
-                NpcOptions npcOptions = NpcOptions.None;
+                var npcOptions = NpcOptions.None;
                 if((options & OS_NPC_SENSE_AS_AGENT) != 0)
                 {
                     npcOptions |= NpcOptions.SenseAsAgent;
@@ -119,7 +113,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             }
         }
 
-        bool TryGetNpc(ScriptInstance instance, UUID npc, out NpcAgent agent)
+        private bool TryGetNpc(ScriptInstance instance, UUID npc, out NpcAgent agent)
         {
             ObjectPart part = instance.Part;
 
@@ -256,17 +250,17 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             }
         }
 
-        LSLKey SaveAppearance(ScriptInstance instance, NpcAgent agent, string notecard)
+        private LSLKey SaveAppearance(ScriptInstance instance, NpcAgent agent, string notecard)
         {
             ObjectPart part = instance.Part;
             SceneInterface scene = part.ObjectGroup.Scene;
-            Notecard nc = (Notecard)agent.Appearance;
+            var nc = (Notecard)agent.Appearance;
             AssetData asset = nc.Asset();
             asset.Name = "Saved Appearance";
             asset.ID = UUID.Random;
             scene.AssetService.Store(asset);
 
-            ObjectPartInventoryItem item = new ObjectPartInventoryItem()
+            var item = new ObjectPartInventoryItem()
             {
                 AssetID = asset.ID,
                 AssetType = AssetType.Notecard,
@@ -506,8 +500,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 NpcAgent agent;
                 if (TryGetNpc(instance, npc, out agent))
                 {
-                    ProfileProperties props;
-                    props = agent.ProfileService.Properties[agent.Owner];
+                    ProfileProperties props = agent.ProfileService.Properties[agent.Owner];
                     props.ImageID = textureID;
                     agent.ProfileService.Properties[agent.Owner, ServiceInterfaces.Profile.ProfileServiceInterface.PropertiesUpdateFlags.Properties] = props;
                 }
@@ -565,7 +558,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         public AnArray NpcGetFoldersInFolder(ScriptInstance instance, LSLKey npc, LSLKey folderid)
         {
             NpcAgent npcAgent;
-            AnArray result = new AnArray();
+            var result = new AnArray();
             lock (instance)
             {
                 if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
@@ -630,88 +623,60 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.ASSL, "npcGetRootFolder")]
-        public LSLKey NpcGetRootFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.RootFolder);
-        }
+        public LSLKey NpcGetRootFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.RootFolder);
 
         [APILevel(APIFlags.ASSL, "npcGetClothingFolder")]
-        public LSLKey NpcGetClothingFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.Clothing);
-        }
+        public LSLKey NpcGetClothingFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.Clothing);
 
         [APILevel(APIFlags.ASSL, "npcGetBodypartsFolder")]
-        public LSLKey NpcGetBodypartsFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.Bodypart);
-        }
+        public LSLKey NpcGetBodypartsFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.Bodypart);
 
         [APILevel(APIFlags.ASSL, "npcGetObjectsFolder")]
-        public LSLKey NpcGetObjectsFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.Object);
-        }
+        public LSLKey NpcGetObjectsFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.Object);
 
         [APILevel(APIFlags.ASSL, "npcGetNotecardsFolder")]
-        public LSLKey NpcGetNotecardsFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.Notecard);
-        }
+        public LSLKey NpcGetNotecardsFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.Notecard);
 
         [APILevel(APIFlags.ASSL, "npcGetScriptsFolder")]
-        public LSLKey NpcGetScriptsFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.LSLText);
-        }
+        public LSLKey NpcGetScriptsFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.LSLText);
 
         [APILevel(APIFlags.ASSL, "npcGetTexturesFolder")]
-        public LSLKey NpcGetTexturesFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.Texture);
-        }
+        public LSLKey NpcGetTexturesFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.Texture);
 
         [APILevel(APIFlags.ASSL, "npcGetSoundsFolder")]
-        public LSLKey NpcGetSoundsFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.Sound);
-        }
+        public LSLKey NpcGetSoundsFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.Sound);
 
         [APILevel(APIFlags.ASSL, "npcGetLandmarksFolder")]
-        public LSLKey NpcGetLandmarksFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.Landmark);
-        }
+        public LSLKey NpcGetLandmarksFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.Landmark);
 
         [APILevel(APIFlags.ASSL, "npcGetAnimationsFolder")]
-        public LSLKey NpcGetAnimationsFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.Animation);
-        }
+        public LSLKey NpcGetAnimationsFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.Animation);
 
         [APILevel(APIFlags.ASSL, "npcGetGesturesFolder")]
-        public LSLKey NpcGetGesturesFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.Gesture);
-        }
+        public LSLKey NpcGetGesturesFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.Gesture);
 
         [APILevel(APIFlags.ASSL, "npcGetCallingcardsFolder")]
-        public LSLKey NpcGetCallingcardsFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.CallingCard);
-        }
+        public LSLKey NpcGetCallingcardsFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.CallingCard);
 
         [APILevel(APIFlags.ASSL, "npcGetTrashFolder")]
-        public LSLKey NpcGetTrashFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.TrashFolder);
-        }
+        public LSLKey NpcGetTrashFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.TrashFolder);
 
         [APILevel(APIFlags.ASSL, "npcGetLostAndFoundFolder")]
-        public LSLKey NpcGetLostAndFoundFolder(ScriptInstance instance, LSLKey npc)
-        {
-            return NpcGetFolderForType(instance, npc, AssetType.LostAndFoundFolder);
-        }
+        public LSLKey NpcGetLostAndFoundFolder(ScriptInstance instance, LSLKey npc) =>
+            NpcGetFolderForType(instance, npc, AssetType.LostAndFoundFolder);
 
         [APILevel(APIFlags.ASSL, "npcListenIM")]
         public void NpcListenIM(ScriptInstance instance, LSLKey npc, int maptochannel)
@@ -773,7 +738,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         public AnArray NpcGetItemData(ScriptInstance instance, LSLKey npc, LSLKey itemid, AnArray paralist)
         {
             NpcAgent npcAgent;
-            AnArray result = new AnArray();
+            var result = new AnArray();
             lock (instance)
             {
                 if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
@@ -852,7 +817,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         public AnArray NpcGetFolderData(ScriptInstance instance, LSLKey npc, LSLKey folderid, AnArray paralist)
         {
             NpcAgent npcAgent;
-            AnArray result = new AnArray();
+            var result = new AnArray();
             lock (instance)
             {
                 if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
@@ -894,7 +859,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         [ExecutedOnScriptRemove]
         public void ResetListeners(ScriptInstance instance)
         {
-            Script script = (Script)instance;
+            var script = (Script)instance;
             lock (script)
             {
                 ObjectPart part = instance.Part;

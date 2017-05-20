@@ -93,16 +93,16 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
             public SceneInterface Scene;
             public readonly RwLockedDictionary<UUID, ObjectGroup> KnownObjects = new RwLockedDictionary<UUID, ObjectGroup>();
             public readonly RwLockedDictionary<UUID, IAgent> KnownAgents = new RwLockedDictionary<UUID, IAgent>();
-            public readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<ScriptInstance, SensorInfo>> SensorRepeats = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<ScriptInstance, SensorInfo>>(delegate() { return new RwLockedDictionary<ScriptInstance, SensorInfo>(); });
+            public readonly RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<ScriptInstance, SensorInfo>> SensorRepeats = new RwLockedDictionaryAutoAdd<UUID, RwLockedDictionary<ScriptInstance, SensorInfo>>(() => new RwLockedDictionary<ScriptInstance, SensorInfo>());
             public readonly System.Timers.Timer m_Timer = new System.Timers.Timer(1);
             public readonly object m_TimerLock = new object();
             /* when sensor repeats are active, these are the operating limits */
-            int m_LastTickCount;
-            const double MIN_SENSOR_INTERVAL = 0.2;
-            const double MAX_SENSOR_INTERVAL = 3600;
+            private int m_LastTickCount;
+            private const double MIN_SENSOR_INTERVAL = 0.2;
+            private const double MAX_SENSOR_INTERVAL = 3600;
             public Thread m_ObjectWorkerThread;
             public bool m_StopThread;
-            readonly BlockingQueue<ObjectUpdateInfo> m_ObjectUpdates = new BlockingQueue<ObjectUpdateInfo>();
+            private readonly BlockingQueue<ObjectUpdateInfo> m_ObjectUpdates = new BlockingQueue<ObjectUpdateInfo>();
 
             public SceneInfo(SceneInterface scene)
             {
@@ -135,7 +135,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 m_ObjectUpdates.Enqueue(info);
             }
 
-            void SensorUpdateThread()
+            private void SensorUpdateThread()
             {
                 Thread.CurrentThread.Name = "NpcSensor Repeat Thread for " + Scene.ID.ToString();
                 while (!m_StopThread)
@@ -192,7 +192,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 }
             }
 
-            void SensorRepeatTimer(object o, EventArgs args)
+            private void SensorRepeatTimer(object o, EventArgs args)
             {
                 int elapsedTimeInMsecs;
                 lock (m_TimerLock)
@@ -222,16 +222,18 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                                 kvp.Value.TimeoutToElapse += kvp.Value.Timeout;
                                 if (kvp.Value.SensorHits.Count != 0)
                                 {
-                                    NpcSensorEvent ev = new NpcSensorEvent();
-                                    ev.NpcId = kvp.Value.Npc.ID;
-                                    ev.Detected = GetDistanceSorted(kvp.Value.SensePoint, kvp.Value.SensorHits.Values);
-                                    kvp.Value.Instance.PostEvent(ev);
+                                    kvp.Value.Instance.PostEvent(new NpcSensorEvent()
+                                    {
+                                        NpcId = kvp.Value.Npc.ID,
+                                        Detected = GetDistanceSorted(kvp.Value.SensePoint, kvp.Value.SensorHits.Values)
+                                    });
                                 }
                                 else
                                 {
-                                    NpcNoSensorEvent ev = new NpcNoSensorEvent();
-                                    ev.NpcId = kvp.Value.Npc.ID;
-                                    kvp.Value.Instance.PostEvent(ev);
+                                    kvp.Value.Instance.PostEvent(new NpcNoSensorEvent()
+                                    {
+                                        NpcId = kvp.Value.Npc.ID
+                                    });
                                 }
 
                                 /* re-evaluate sensor data */
@@ -256,21 +258,21 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
             }
 
             /* private constants */
-            const int SENSE_AGENTS = 0x33;
-            const int SENSE_OBJECTS = 0xE;
-            const int AGENT = 0x01;
-            const int ACTIVE = 0x02;
-            const int PASSIVE = 0x04;
-            const int SCRIPTED = 0x08;
-            const int AGENT_BY_USERNAME = 0x10;
-            const int NPC = 0x20;
+            private const int SENSE_AGENTS = 0x33;
+            private const int SENSE_OBJECTS = 0xE;
+            private const int AGENT = 0x01;
+            private const int ACTIVE = 0x02;
+            private const int PASSIVE = 0x04;
+            private const int SCRIPTED = 0x08;
+            private const int AGENT_BY_USERNAME = 0x10;
+            private const int NPC = 0x20;
 
-            void CleanRepeatSensor(SensorInfo sensor)
+            private void CleanRepeatSensor(SensorInfo sensor)
             {
                 /* it is a lot faster to re-check the detect list than going through the big object list.
                  * The nice improvement of that is that our repeat sensor does not need an initial scan after every interval.
                  */
-                List<DetectInfo> newSensorHits = new List<DetectInfo>();
+                var newSensorHits = new List<DetectInfo>();
                 foreach (KeyValuePair<UUID, DetectInfo> kvp in sensor.SensorHits)
                 {
                     IAgent agent;
@@ -302,7 +304,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 }
             }
 
-            void EvalSensor(SensorInfo sensor)
+            private void EvalSensor(SensorInfo sensor)
             {
                 if ((sensor.SearchType & SENSE_AGENTS) != 0)
                 {
@@ -321,9 +323,9 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 }
             }
 
-            List<DetectInfo> GetDistanceSorted(Vector3 basePos, ICollection<DetectInfo> unsortedCollection)
+            private List<DetectInfo> GetDistanceSorted(Vector3 basePos, ICollection<DetectInfo> unsortedCollection)
             {
-                List<DetectInfo> list = new List<DetectInfo>();
+                var list = new List<DetectInfo>();
                 foreach (DetectInfo input_di in unsortedCollection)
                 {
                     double input_dist = (basePos - input_di.Position).LengthSquared;
@@ -355,16 +357,18 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
 
                 if (sensor.SensorHits.Count != 0)
                 {
-                    NpcSensorEvent ev = new NpcSensorEvent();
-                    ev.NpcId = sensor.Npc.ID;
-                    ev.Detected = GetDistanceSorted(sensor.SensePoint, sensor.SensorHits.Values);
-                    sensor.Instance.PostEvent(ev);
+                    sensor.Instance.PostEvent(new NpcSensorEvent()
+                    {
+                        NpcId = sensor.Npc.ID,
+                        Detected = GetDistanceSorted(sensor.SensePoint, sensor.SensorHits.Values)
+                    });
                 }
                 else
                 {
-                    NpcNoSensorEvent ev = new NpcNoSensorEvent();
-                    ev.NpcId = sensor.Npc.ID;
-                    sensor.Instance.PostEvent(ev);
+                    sensor.Instance.PostEvent(new NpcNoSensorEvent()
+                    {
+                        NpcId = sensor.Npc.ID
+                    });
                 }
 
                 if (sensor.IsRepeating)
@@ -404,17 +408,17 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 }
             }
 
-            void AddIfSensed(SensorInfo sensor, IObject obj)
+            private void AddIfSensed(SensorInfo sensor, IObject obj)
             {
                 if (CheckIfSensed(sensor, obj))
                 {
-                    DetectInfo detInfo = new DetectInfo();
+                    var detInfo = new DetectInfo();
                     detInfo.FillDetectInfoFromObject(obj);
                     sensor.SensorHits[obj.ID] = detInfo;
                 }
             }
 
-            bool CheckArcAndRange(SensorInfo sensor, IObject obj)
+            private bool CheckArcAndRange(SensorInfo sensor, IObject obj)
             {
                 Vector3 fromPos = sensor.SensePoint;
                 Vector3 targetPos = obj.GlobalPosition;
@@ -429,7 +433,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                     Vector3 fwd_direction = Vector3.UnitX * sensor.SenseRotation;
                     double d = fwd_direction.Dot(object_direction);
                     double angleToObj = Math.Acos(d / distance);
-                    return (angleToObj <= sensor.SearchArc);
+                    return angleToObj <= sensor.SearchArc;
                 }
                 else
                 {
@@ -437,7 +441,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 }
             }
 
-            bool CheckIfSensed(SensorInfo sensor, IObject obj)
+            private bool CheckIfSensed(SensorInfo sensor, IObject obj)
             {
                 if (sensor.SearchKey != UUID.Zero && sensor.SearchKey != obj.ID)
                 {
@@ -549,13 +553,8 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
             }
         }
 
-        readonly RwLockedDictionary<UUID, SceneInfo> m_Scenes = new RwLockedDictionary<UUID, SceneInfo>();
-        SceneList m_SceneList;
-
-        public NpcSensorApi()
-        {
-
-        }
+        private readonly RwLockedDictionary<UUID, SceneInfo> m_Scenes = new RwLockedDictionary<UUID, SceneInfo>();
+        private SceneList m_SceneList;
 
         public void Startup(ConfigurationLoader loader)
         {
@@ -570,20 +569,14 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
             m_SceneList.OnRegionRemove -= Scenes_OnRegionRemove;
         }
 
-        public ShutdownOrder ShutdownOrder
-        {
-            get
-            {
-                return ShutdownOrder.Any;
-            }
-        }
+        public ShutdownOrder ShutdownOrder => ShutdownOrder.Any;
 
-        void Scenes_OnRegionAdd(SceneInterface obj)
+        private void Scenes_OnRegionAdd(SceneInterface obj)
         {
             m_Scenes.Add(obj.ID, new SceneInfo(obj));
         }
 
-        void Scenes_OnRegionRemove(SceneInterface obj)
+        private void Scenes_OnRegionRemove(SceneInterface obj)
         {
             SceneInfo sceneInfo;
             if (m_Scenes.Remove(obj.ID, out sceneInfo))
@@ -592,7 +585,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
             }
         }
 
-        bool TryGetNpc(SceneInterface scene, UUID npc, out NpcAgent npcAgent)
+        private bool TryGetNpc(SceneInterface scene, UUID npc, out NpcAgent npcAgent)
         {
             IAgent agent;
             if(!scene.Agents.TryGetValue(npc, out agent))
@@ -670,7 +663,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                     sceneInfo.SensorRepeats.TryGetValue(npcid.AsUUID, out npcSensors))
                 {
                     npcSensors.Remove(instance);
-                    sceneInfo.SensorRepeats.RemoveIf(npcid.AsUUID, delegate (RwLockedDictionary<ScriptInstance, SensorInfo> info) { return info.Count == 0; });
+                    sceneInfo.SensorRepeats.RemoveIf(npcid.AsUUID, (RwLockedDictionary<ScriptInstance, SensorInfo> info) => info.Count == 0);
                 }
             }
         }
@@ -683,7 +676,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
             SceneInfo sceneInfo;
             if (m_Scenes.TryGetValue(scene.ID, out sceneInfo))
             {
-                List<UUID> npcs = new List<UUID>();
+                var npcs = new List<UUID>();
                 foreach(KeyValuePair<UUID, RwLockedDictionary<ScriptInstance, SensorInfo>> kvp in sceneInfo.SensorRepeats)
                 {
                     SensorInfo info;
@@ -694,7 +687,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 }
                 foreach(UUID npcId in npcs)
                 {
-                    sceneInfo.SensorRepeats.RemoveIf(npcId, delegate (RwLockedDictionary<ScriptInstance, SensorInfo> info) { return info.Count == 0; });
+                    sceneInfo.SensorRepeats.RemoveIf(npcId, (RwLockedDictionary<ScriptInstance, SensorInfo> info) => info.Count == 0);
                 }
             }
         }
@@ -706,7 +699,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
             {
                 return;
             }
-            Script script = (Script)instance;
+            var script = (Script)instance;
             lock (script)
             {
                 ObjectGroup grp = instance.Part.ObjectGroup;
@@ -723,7 +716,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                     if (m_Scenes.TryGetValue(scene.ID, out sceneInfo) &&
                         TryGetNpc(scene, (UUID)args[argi + 0], out npcAgent))
                     {
-                        SensorInfo info = new SensorInfo(instance,
+                        var info = new SensorInfo(instance,
                             npcAgent,
                             true,
                             (double)args[argi + 1],
@@ -736,13 +729,12 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                     }
                 }
             }
-
         }
 
         [ExecutedOnSerialization("npcsensor")]
         public void Serialize(ScriptInstance instance, List<object> res)
         {
-            Script script = (Script)instance;
+            var script = (Script)instance;
             lock (script)
             {
                 SceneInterface scene = instance.Part.ObjectGroup.Scene;
