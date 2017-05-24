@@ -41,6 +41,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
     [ScriptApiName("Npc")]
     [LSLImplementation]
     [Description("OSSL Npc API")]
+    [PluginName("LSL_NPC")]
     public class NpcApi : IScriptApi, IPlugin
     {
         private NpcManager m_NpcManager;

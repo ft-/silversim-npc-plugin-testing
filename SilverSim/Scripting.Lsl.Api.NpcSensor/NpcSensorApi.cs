@@ -41,6 +41,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
     [ScriptApiName("NpcSensor")]
     [LSLImplementation]
     [Description("OSSL NpcSensor API")]
+    [PluginName("LSL_NpcSensor")]
     public class NpcSensorApi : IScriptApi, IPlugin, IPluginShutdown
     {
         public class SensorInfo
