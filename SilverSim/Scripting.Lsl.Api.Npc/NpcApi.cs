@@ -25,6 +25,7 @@ using SilverSim.Scene.Types.Agent;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
+using SilverSim.Scripting.Lsl.Api.Properties.AgentInventory;
 using SilverSim.ServiceInterfaces.Presence;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
@@ -572,6 +573,21 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 }
             }
             return result;
+        }
+
+        [APIExtension(APIExtension.AgentInventory, "npcGetInventory")]
+        public AgentInventoryApi.AgentInventory NpcGetInventory(ScriptInstance instance, LSLKey npc)
+        {
+            NpcAgent npcAgent;
+            var result = new AnArray();
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    return new AgentInventoryApi.AgentInventory(instance, npcAgent.InventoryService, npcAgent.Owner, false);
+                }
+            }
+            return new AgentInventoryApi.AgentInventory();
         }
 
         [APILevel(APIFlags.ASSL)]
