@@ -468,6 +468,8 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                     if(agent.IsNpc)
                     {
                         res.Add(agent.ID);
+                        res.Add(agent.GlobalPosition);
+                        res.Add(agent.Name);
                     }
                 }
             }
