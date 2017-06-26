@@ -457,6 +457,23 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             throw new NotImplementedException("osNpcStopMoveToTarget(key)");
         }
 
+        [APILevel(APIFlags.OSSL, "osGetNPCList")]
+        public AnArray GetNPCList(ScriptInstance instance)
+        {
+            AnArray res = new AnArray();
+            lock(instance)
+            {
+                foreach(IAgent agent in instance.Part.ObjectGroup.Scene.RootAgents)
+                {
+                    if(agent.IsNpc)
+                    {
+                        res.Add(agent.ID);
+                    }
+                }
+            }
+            return res;
+        }
+
         [APILevel(APIFlags.OSSL, "osNpcSetProfileAbout")]
         [APILevel(APIFlags.ASSL, "npcSetProfileAbout")]
         public void NpcSetProfileAbout(ScriptInstance instance, LSLKey npc, string text)
