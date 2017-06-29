@@ -270,6 +270,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 ParentFolderID = part.ID,
                 InventoryType = InventoryType.Notecard,
                 LastOwner = part.Owner,
+                Owner = part.Owner,
                 Name = notecard,
                 Description = "Saved Appearance"
             };
