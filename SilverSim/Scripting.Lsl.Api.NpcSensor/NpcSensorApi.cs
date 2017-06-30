@@ -136,6 +136,11 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 m_ObjectUpdates.Enqueue(info);
             }
 
+            public void ScheduleUpdate(ObjectInventoryUpdateInfo info, UUID fromSceneID)
+            {
+                /* intentionally ignored */
+            }
+
             private void SensorUpdateThread()
             {
                 Thread.CurrentThread.Name = "NpcSensor Repeat Thread for " + Scene.ID.ToString();
