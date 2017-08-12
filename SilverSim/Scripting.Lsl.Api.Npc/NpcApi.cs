@@ -102,7 +102,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 {
                     instance.ShoutError("Inventory item not a notecard");
                 }
-                AssetData data = scene.AssetService[resitem.ID];
+                AssetData data = scene.AssetService[resitem.AssetID];
                 var nc = new Notecard(data);
                 UGI group = (options & OS_NPC_OBJECT_GROUP) != 0 ? part.Group : UGI.Unknown;
                 var npcOptions = NpcOptions.None;
