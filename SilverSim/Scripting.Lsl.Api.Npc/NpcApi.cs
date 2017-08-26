@@ -115,6 +115,41 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             }
         }
 
+        [APILevel(APIFlags.ASSL, "npcCreatePersistent")]
+        [ThreatLevelRequired(ThreatLevel.High, "npcCreatePersistent")]
+        public LSLKey NpcCreatePersistent(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom) =>
+            NpcCreatePersistent(instance, firstName, lastName, position, cloneFrom, 0);
+
+        [APILevel(APIFlags.ASSL, "npcCreatePersistent")]
+        [ThreatLevelRequired(ThreatLevel.High, "npcCreatePersistent")]
+        public LSLKey NpcCreatePersistent(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom, int options)
+        {
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                SceneInterface scene = instance.Part.ObjectGroup.Scene;
+                ObjectPartInventoryItem resitem;
+                if (!part.Inventory.TryGetValue(cloneFrom, out resitem))
+                {
+                    instance.ShoutError("Inventory item not found");
+                }
+                else if (resitem.AssetType != AssetType.Notecard)
+                {
+                    instance.ShoutError("Inventory item not a notecard");
+                }
+                AssetData data = scene.AssetService[resitem.AssetID];
+                var nc = new Notecard(data);
+                UGI group = (options & OS_NPC_OBJECT_GROUP) != 0 ? part.Group : UGI.Unknown;
+                var npcOptions = NpcOptions.Persistent;
+                if ((options & OS_NPC_SENSE_AS_AGENT) != 0)
+                {
+                    npcOptions |= NpcOptions.SenseAsAgent;
+                }
+                NpcAgent agent = m_NpcManager.CreateNpc(scene.ID, part.Owner, group, firstName, lastName, position, nc, npcOptions);
+                return agent.ID;
+            }
+        }
+
         private bool TryGetNpc(ScriptInstance instance, UUID npc, out NpcAgent agent)
         {
             ObjectPart part = instance.Part;
@@ -310,12 +345,12 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 if(TryGetNpc(instance, npc.AsUUID, out npcAgent) &&
                     scene.Agents.TryGetValue(user.AsUUID, out agent))
                 {
-                    GridInstantMessage gim = new GridInstantMessage()
+                    var gim = new GridInstantMessage()
                     {
                         FromAgent = npcAgent.Owner,
                         Dialog = GridInstantMessageDialog.MessageFromAgent,
                         FromGroup = UGI.Unknown,
-                        IMSessionID = UUID.Random,
+                        IMSessionID = npcAgent.GetOrCreateIMSession(agent.ID),
                         Message = message,
                         Position = npcAgent.GlobalPosition,
                         RegionID = scene.ID
