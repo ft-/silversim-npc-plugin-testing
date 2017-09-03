@@ -488,12 +488,14 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.OSSL, "osNpcStopMoveToTarget")]
+        [APILevel(APIFlags.ASSL, "npcStopMoveToTarget")]
         public void NpcStopMoveToTarget(ScriptInstance instance, LSLKey npc)
         {
             throw new NotImplementedException("osNpcStopMoveToTarget(key)");
         }
 
         [APILevel(APIFlags.OSSL, "osGetNPCList")]
+        [APILevel(APIFlags.ASSL, "npcGetList")]
         public AnArray GetNPCList(ScriptInstance instance)
         {
             AnArray res = new AnArray();
