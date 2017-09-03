@@ -523,8 +523,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 NpcAgent agent;
                 if (TryGetNpc(instance, npc, out agent))
                 {
-                    ProfileProperties props;
-                    props = agent.ProfileService.Properties[agent.Owner];
+                    ProfileProperties props = agent.ProfileService.Properties[agent.Owner];
                     props.AboutText = text;
                     agent.ProfileService.Properties[agent.Owner, ServiceInterfaces.Profile.ProfileServiceInterface.PropertiesUpdateFlags.Properties] = props;
                 }
@@ -540,8 +539,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 NpcAgent agent;
                 if(TryGetNpc(instance, npc, out agent))
                 {
-                    ProfileProperties props;
-                    props = agent.ProfileService.Properties[agent.Owner];
+                    ProfileProperties props = agent.ProfileService.Properties[agent.Owner];
                     props.WebUrl = url;
                     agent.ProfileService.Properties[agent.Owner, ServiceInterfaces.Profile.ProfileServiceInterface.PropertiesUpdateFlags.Properties] = props;
                 }
