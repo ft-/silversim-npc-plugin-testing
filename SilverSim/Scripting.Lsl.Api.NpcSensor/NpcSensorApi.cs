@@ -745,7 +745,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
             {
                 SceneInterface scene = instance.Part.ObjectGroup.Scene;
                 SceneInfo sceneInfo;
-                if (m_Scenes.TryGetValue(scene.ID, out sceneInfo))
+                if (m_Scenes.TryGetValue(scene.ID, out sceneInfo) && sceneInfo.SensorRepeats.Count != 0)
                 {
                     res.Add("npcsensor");
                     int idx = res.Count;
