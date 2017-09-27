@@ -2,6 +2,6 @@
 <package>
 	<name>SilverSim.Scripting.Lsl.Api.NpcSensor</name>
 	<files>
-		<file name="bin/plugins/SilverSim.Scripting.Lsl.Api.NpcSensor.dll"/>
+		<file name="bin/plugins/SilverSim.Scripting.Lsl.Api.NpcSensor.dll" is-version-src="true"/>
 	</files>
 </package>

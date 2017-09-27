@@ -11,6 +11,6 @@
 		<dependency name="SilverSim.Scripting.Lsl.Api.NpcSensor"/>
 	</dependencies>
 	<files>
-		<file name="bin/plugins/SilverSim.Scripting.Lsl.Api.Npc.dll"/>
+		<file name="bin/plugins/SilverSim.Scripting.Lsl.Api.Npc.dll" is-version-src="true"/>
 	</files>
 </package>
