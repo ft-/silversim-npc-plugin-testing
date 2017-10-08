@@ -675,6 +675,8 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         public const int NPC_INVENTORY_CREATIONDATE = 14;
         [APILevel(APIFlags.ASSL)]
         public const int NPC_INVENTORY_VERSION = 15;
+        [APILevel(APIFlags.ASSL)]
+        public const int NPC_INVENTORY_DEFAULT_TYPE = 16;
 
         public LSLKey NpcGetFolderForType(ScriptInstance instance, LSLKey npc, AssetType type)
         {
@@ -905,8 +907,8 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                                     result.Add(folder.Name);
                                     break;
 
-                                case NPC_INVENTORY_TYPE:
-                                    result.Add((int)folder.InventoryType);
+                                case NPC_INVENTORY_DEFAULT_TYPE:
+                                    result.Add((int)folder.DefaultType);
                                     break;
 
                                 case NPC_INVENTORY_VERSION:
