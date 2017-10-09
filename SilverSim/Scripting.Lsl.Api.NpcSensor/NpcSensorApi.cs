@@ -360,10 +360,14 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 {
                     SensorRepeats[sensor.Npc.ID][sensor.Instance] = sensor;
                 }
+                else
+                {
+                    EvalSensor(sensor);
+                }
 
                 if (sensor.SensorHits.Count != 0)
                 {
-                    sensor.Instance.PostEvent(new NpcSensorEvent()
+                    sensor.Instance.PostEvent(new NpcSensorEvent
                     {
                         NpcId = sensor.Npc.ID,
                         Detected = GetDistanceSorted(sensor.SensePoint, sensor.SensorHits.Values)
@@ -371,7 +375,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 }
                 else
                 {
-                    sensor.Instance.PostEvent(new NpcNoSensorEvent()
+                    sensor.Instance.PostEvent(new NpcNoSensorEvent
                     {
                         NpcId = sensor.Npc.ID
                     });
