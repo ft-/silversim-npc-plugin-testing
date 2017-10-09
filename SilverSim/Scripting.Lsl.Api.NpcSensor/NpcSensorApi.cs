@@ -453,7 +453,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 {
                     return false;
                 }
-                if (obj.Owner.ID == sensor.OwnerID || obj.Owner.ID == sensor.OwnObjectID)
+                if (obj.ID == sensor.OwnObjectID)
                 {
                     return false;
                 }
@@ -631,7 +631,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 if (m_Scenes.TryGetValue(scene.ID, out sceneInfo) &&
                     TryGetNpc(scene, npc.AsUUID, out npcAgent))
                 {
-                    sceneInfo.StartSensor(new SensorInfo(instance, npcAgent, false, 0, name, id, type, radius, arc));
+                    sceneInfo.StartSensor(new SensorInfo(instance, npcAgent, false, 0, name, id, type, radius, arc) { OwnObjectID = npcAgent.ID });
                 }
             }
         }
@@ -652,7 +652,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                 if (m_Scenes.TryGetValue(scene.ID, out sceneInfo) &&
                     TryGetNpc(scene, npc.AsUUID, out npcAgent))
                 {
-                    sceneInfo.StartSensor(new SensorInfo(instance, npcAgent, true, rate, name, id, type, range, arc));
+                    sceneInfo.StartSensor(new SensorInfo(instance, npcAgent, true, rate, name, id, type, range, arc) { OwnObjectID = npcAgent.ID });
                 }
             }
         }
@@ -730,7 +730,8 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                             (UUID)args[argi + 3],
                             (int)args[argi + 4],
                             (double)args[argi + 5],
-                            (double)args[argi + 6]);
+                            (double)args[argi + 6])
+                        { OwnObjectID = npcAgent.ID };
                         sceneInfo.StartSensor(info);
                     }
                 }
