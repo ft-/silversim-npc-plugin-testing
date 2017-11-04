@@ -297,7 +297,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             asset.ID = UUID.Random;
             scene.AssetService.Store(asset);
 
-            var item = new ObjectPartInventoryItem()
+            var item = new ObjectPartInventoryItem
             {
                 AssetID = asset.ID,
                 AssetType = AssetType.Notecard,
@@ -345,7 +345,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 if(TryGetNpc(instance, npc.AsUUID, out npcAgent) &&
                     scene.Agents.TryGetValue(user.AsUUID, out agent))
                 {
-                    var gim = new GridInstantMessage()
+                    var gim = new GridInstantMessage
                     {
                         FromAgent = npcAgent.Owner,
                         Dialog = GridInstantMessageDialog.MessageFromAgent,

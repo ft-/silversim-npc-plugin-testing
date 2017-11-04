@@ -233,7 +233,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                                 kvp.Value.TimeoutToElapse += kvp.Value.Timeout;
                                 if (kvp.Value.SensorHits.Count != 0)
                                 {
-                                    kvp.Value.Instance.PostEvent(new NpcSensorEvent()
+                                    kvp.Value.Instance.PostEvent(new NpcSensorEvent
                                     {
                                         NpcId = kvp.Value.Npc.ID,
                                         Detected = GetDistanceSorted(kvp.Value.SensePoint, kvp.Value.SensorHits.Values)
@@ -241,7 +241,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                                 }
                                 else
                                 {
-                                    kvp.Value.Instance.PostEvent(new NpcNoSensorEvent()
+                                    kvp.Value.Instance.PostEvent(new NpcNoSensorEvent
                                     {
                                         NpcId = kvp.Value.Npc.ID
                                     });
