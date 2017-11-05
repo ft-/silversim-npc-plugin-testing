@@ -103,7 +103,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
             public readonly System.Timers.Timer m_Timer = new System.Timers.Timer(1);
             public readonly object m_TimerLock = new object();
             /* when sensor repeats are active, these are the operating limits */
-            private int m_LastTickCount;
+            private long m_LastTickCount;
             private const double MIN_SENSOR_INTERVAL = 0.2;
             private const double MAX_SENSOR_INTERVAL = 3600;
             public Thread m_ObjectWorkerThread;
@@ -205,7 +205,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
 
             private void SensorRepeatTimer(object o, EventArgs args)
             {
-                int elapsedTimeInMsecs;
+                long elapsedTimeInTicks;
                 lock (m_TimerLock)
                 {
                     /* Stop timer when not needed */
@@ -214,12 +214,12 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                         m_Timer.Stop();
                         return;
                     }
-                    int newTickCount = Environment.TickCount;
-                    elapsedTimeInMsecs = newTickCount - m_LastTickCount;
+                    long newTickCount = StopWatchTime.TickCount;
+                    elapsedTimeInTicks = newTickCount - m_LastTickCount;
                     m_LastTickCount = newTickCount;
                 }
 
-                double elapsedTimeInSecs = elapsedTimeInMsecs / 1000f;
+                double elapsedTimeInSecs = elapsedTimeInTicks / StopWatchTime.Frequency;
 
                 foreach (RwLockedDictionary<ScriptInstance, SensorInfo> sens in SensorRepeats.Values)
                 {
@@ -415,7 +415,7 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                             if (!m_Timer.Enabled)
                             {
                                 /* load a new value into LastTickCount, timer was disabled */
-                                m_LastTickCount = Environment.TickCount;
+                                m_LastTickCount = StopWatchTime.TickCount;
                                 m_Timer.Start();
                             }
                         }
