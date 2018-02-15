@@ -25,7 +25,7 @@ using SilverSim.Scene.Types.Agent;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
-using SilverSim.Scripting.Lsl.Api.Properties.AgentInventory;
+using SilverSim.Scripting.Lsl.Api.Agents.Properties;
 using SilverSim.ServiceInterfaces.Presence;
 using SilverSim.Types;
 using SilverSim.Types.Asset;
