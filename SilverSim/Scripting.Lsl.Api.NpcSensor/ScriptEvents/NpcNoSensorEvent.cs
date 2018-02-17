@@ -20,7 +20,6 @@
 // exception statement from your version.
 
 using SilverSim.Scene.Types.Script.Events;
-using SilverSim.Types;
 
 namespace SilverSim.Scripting.Lsl.Api.NpcSensor.ScriptEvents
 {
