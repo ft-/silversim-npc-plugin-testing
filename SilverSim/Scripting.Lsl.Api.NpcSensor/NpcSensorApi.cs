@@ -495,21 +495,21 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
                     if (agent.IsNpc)
                     {
                         if ((sensor.SearchType & NPC) != 0 && sensor.SearchName.Length != 0 &&
-                            sensor.SearchName != agent.Owner.FullName ||
-                            (sensor.SearchName != agent.Owner.FirstName + " Resident" && agent.Owner.LastName.Length == 0))
+                            sensor.SearchName != agent.NamedOwner.FullName ||
+                            (sensor.SearchName != agent.NamedOwner.FirstName + " Resident" && agent.NamedOwner.LastName.Length == 0))
                         {
                             return false;
                         }
                     }
                     else if ((sensor.SearchType & AGENT) != 0 && sensor.SearchName.Length != 0 &&
-                            (sensor.SearchName != agent.Owner.FullName ||
-                            (sensor.SearchName != agent.Owner.FirstName + " Resident" && agent.Owner.LastName.Length == 0)))
+                            (sensor.SearchName != agent.NamedOwner.FullName ||
+                            (sensor.SearchName != agent.NamedOwner.FirstName + " Resident" && agent.NamedOwner.LastName.Length == 0)))
                     {
                         return false;
                     }
                     else if ((sensor.SearchType & AGENT_BY_USERNAME) != 0 && sensor.SearchName.Length != 0 &&
-                            (sensor.SearchName != (agent.Owner.FirstName + ".resident").ToLower() && agent.Owner.LastName.Length == 0) ||
-                            (sensor.SearchName != agent.Owner.FullName.Replace(' ', '.') && agent.Owner.LastName.Length != 0))
+                            (sensor.SearchName != (agent.NamedOwner.FirstName + ".resident").ToLower() && agent.NamedOwner.LastName.Length == 0) ||
+                            (sensor.SearchName != agent.NamedOwner.FullName.Replace(' ', '.') && agent.NamedOwner.LastName.Length != 0))
                     {
                         return false;
                     }

@@ -159,7 +159,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 instance.ShoutError("NPC not found");
                 return false;
             }
-            else if (agent.NpcOwner != UUI.Unknown && agent.NpcOwner != part.Owner)
+            else if (agent.NpcOwner != UGUI.Unknown && agent.NpcOwner != part.Owner)
             {
                 instance.ShoutError("NPC not owned by you");
                 return false;
@@ -347,7 +347,7 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 {
                     var gim = new GridInstantMessage
                     {
-                        FromAgent = npcAgent.Owner,
+                        FromAgent = npcAgent.NamedOwner,
                         Dialog = GridInstantMessageDialog.MessageFromAgent,
                         FromGroup = UGI.Unknown,
                         IMSessionID = npcAgent.GetOrCreateIMSession(agent.ID),
