@@ -27,6 +27,6 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor.ScriptEvents
     public class NpcNoSensorEvent : IScriptEvent
     {
         [TranslatedScriptEventParameter(0)]
-        public LSLKey NpcId;
+        public LSLKey NpcId = new LSLKey();
     }
 }
