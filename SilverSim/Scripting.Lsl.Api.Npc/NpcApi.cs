@@ -937,11 +937,12 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             lock (script)
             {
                 ObjectPart part = instance.Part;
+                ObjectPartInventoryItem item = instance.Item;
                 SceneInterface scene = part?.ObjectGroup?.Scene;
-                if (scene != null)
+                if (scene != null && item != null)
                 {
-                    m_NpcManager.UnlistenAsNpc(scene.ID, part.ID, instance.Item.ID);
-                    m_NpcManager.UnlistenIM(scene.ID, part.ID, instance.Item.ID);
+                    m_NpcManager.UnlistenAsNpc(scene.ID, part.ID, item.ID);
+                    m_NpcManager.UnlistenIM(scene.ID, part.ID, item.ID);
                 }
             }
         }
