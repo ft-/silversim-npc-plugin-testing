@@ -679,9 +679,9 @@ namespace SilverSim.Scripting.Lsl.Api.NpcSensor
         [ExecutedOnScriptReset]
         public void RemoveSensors(ScriptInstance instance)
         {
-            SceneInterface scene = instance.Part.ObjectGroup.Scene;
+            SceneInterface scene = instance.Part?.ObjectGroup?.Scene;
             SceneInfo sceneInfo;
-            if (m_Scenes.TryGetValue(scene.ID, out sceneInfo))
+            if (scene != null && m_Scenes.TryGetValue(scene.ID, out sceneInfo))
             {
                 var npcs = new List<UUID>();
                 foreach(KeyValuePair<UUID, RwLockedDictionary<ScriptInstance, SensorInfo>> kvp in sceneInfo.SensorRepeats)
