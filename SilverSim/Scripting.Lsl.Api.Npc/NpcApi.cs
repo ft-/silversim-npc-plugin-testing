@@ -360,6 +360,32 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             }
         }
 
+        [APILevel(APIFlags.ASSL, "npcStartTyping")]
+        public void NpcStartTyping(ScriptInstance instance, LSLKey npc)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.StartTyping();
+                }
+            }
+        }
+
+        [APILevel(APIFlags.ASSL, "npcStopTyping")]
+        public void NpcStopTyping(ScriptInstance instance, LSLKey npc)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.StopTyping();
+                }
+            }
+        }
+
         [APILevel(APIFlags.OSSL, "osNpcSay")]
         [APILevel(APIFlags.ASSL, "npcSay")]
         public void NpcSay(ScriptInstance instance, LSLKey npc, string message)
