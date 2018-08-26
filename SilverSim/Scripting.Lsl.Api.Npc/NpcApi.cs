@@ -787,16 +787,16 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         [TranslatedScriptEvent("npcdialog")]
         public class NpcScriptDialogEvent : IScriptEvent
         {
-            [TranslatedScriptEventParameter(1)]
+            [TranslatedScriptEventParameter(0)]
             public LSLKey ObjectId;
 
-            [TranslatedScriptEventParameter(2)]
+            [TranslatedScriptEventParameter(1)]
             public int Channel;
 
-            [TranslatedScriptEventParameter(3)]
+            [TranslatedScriptEventParameter(2)]
             public string Message;
 
-            [TranslatedScriptEventParameter(4)]
+            [TranslatedScriptEventParameter(3)]
             public AnArray Buttons = new AnArray();
 
             public NpcScriptDialogEvent()
