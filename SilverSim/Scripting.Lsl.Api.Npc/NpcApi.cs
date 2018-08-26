@@ -25,6 +25,7 @@ using SilverSim.Scene.Types.Agent;
 using SilverSim.Scene.Types.Object;
 using SilverSim.Scene.Types.Scene;
 using SilverSim.Scene.Types.Script;
+using SilverSim.Scene.Types.Script.Events;
 using SilverSim.Scripting.Lsl.Api.Agents.Properties;
 using SilverSim.ServiceInterfaces.Presence;
 using SilverSim.Types;
@@ -33,6 +34,7 @@ using SilverSim.Types.Asset.Format;
 using SilverSim.Types.IM;
 using SilverSim.Types.Inventory;
 using SilverSim.Types.Profile;
+using SilverSim.Viewer.Messages.Script;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -777,6 +779,77 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         [APILevel(APIFlags.ASSL, "npcGetLostAndFoundFolder")]
         public LSLKey NpcGetLostAndFoundFolder(ScriptInstance instance, LSLKey npc) =>
             NpcGetFolderForType(instance, npc, AssetType.LostAndFoundFolder);
+
+        /* advertise script events that need to be translated */
+        [TranslatedScriptEventsInfo]
+        public static readonly Type[] TranslatedEvents = new Type[] { typeof(NpcScriptDialogEvent) };
+
+        [TranslatedScriptEvent("npcdialog")]
+        public class NpcScriptDialogEvent : IScriptEvent
+        {
+            [TranslatedScriptEventParameter(1)]
+            public LSLKey ObjectId;
+
+            [TranslatedScriptEventParameter(2)]
+            public int Channel;
+
+            [TranslatedScriptEventParameter(3)]
+            public string Message;
+
+            [TranslatedScriptEventParameter(4)]
+            public AnArray Buttons = new AnArray();
+
+            public NpcScriptDialogEvent()
+            {
+                ObjectId = UUID.Zero;
+                Message = string.Empty;
+            }
+
+            public NpcScriptDialogEvent(ScriptDialog dialog)
+            {
+                ObjectId = dialog.ObjectID;
+                Channel = dialog.ChatChannel;
+                Message = dialog.Message;
+                foreach (string button in dialog.Buttons)
+                {
+                    Buttons.Add(button);
+                }
+            }
+        }
+
+        [StateEventDelegate]
+        [APILevel(APIFlags.ASSL, "npcdialog")]
+        public delegate void NpcScriptDialogEventDelegate(LSLKey objectId, int channel, string message, AnArray buttons);
+
+        private static IScriptEvent ConvertDialogToScriptEvent(ScriptDialog dialog) => new NpcScriptDialogEvent(dialog);
+
+        [APILevel(APIFlags.ASSL, "npcListenDialog")]
+        public void NpcListenDialog(ScriptInstance instance, LSLKey npc)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent) && npcAgent.IsInScene(part.ObjectGroup.Scene))
+                {
+                    npcAgent.ListenDialogNpc(part.ID, instance.Item.ID, ConvertDialogToScriptEvent);
+                }
+            }
+        }
+
+        [APILevel(APIFlags.ASSL, "npcUnlistenDialog")]
+        public void NpcUnlistenDialog(ScriptInstance instance, LSLKey npc)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                ObjectPart part = instance.Part;
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent) && npcAgent.IsInScene(part.ObjectGroup.Scene))
+                {
+                    npcAgent.UnlistenDialogNpc(part.ID, instance.Item.ID);
+                }
+            }
+        }
 
         [APILevel(APIFlags.ASSL, "npcListenIM")]
         public void NpcListenIM(ScriptInstance instance, LSLKey npc, int maptochannel)
