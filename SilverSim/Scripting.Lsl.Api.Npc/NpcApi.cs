@@ -82,13 +82,13 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
 
         [APILevel(APIFlags.OSSL, "osNpcCreate")]
         [APILevel(APIFlags.ASSL, "npcCreate")]
-        [ThreatLevelRequired(ThreatLevel.High, "osNpcCreate")]
+        [ThreatLevelRequired("osNpcCreate")]
         public LSLKey NpcCreate(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom) =>
             NpcCreate(instance, firstName, lastName, position, cloneFrom, 0);
 
         [APILevel(APIFlags.OSSL, "osNpcCreate")]
         [APILevel(APIFlags.ASSL, "npcCreate")]
-        [ThreatLevelRequired(ThreatLevel.High, "osNpcCreate")]
+        [ThreatLevelRequired("osNpcCreate")]
         public LSLKey NpcCreate(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom, int options)
         {
             lock (instance)
@@ -118,12 +118,12 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
         }
 
         [APILevel(APIFlags.ASSL, "npcCreatePersistent")]
-        [ThreatLevelRequired(ThreatLevel.High, "npcCreatePersistent")]
+        [ThreatLevelRequired("npcCreatePersistent")]
         public LSLKey NpcCreatePersistent(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom) =>
             NpcCreatePersistent(instance, firstName, lastName, position, cloneFrom, 0);
 
         [APILevel(APIFlags.ASSL, "npcCreatePersistent")]
-        [ThreatLevelRequired(ThreatLevel.High, "npcCreatePersistent")]
+        [ThreatLevelRequired("npcCreatePersistent")]
         public LSLKey NpcCreatePersistent(ScriptInstance instance, string firstName, string lastName, Vector3 position, string cloneFrom, int options)
         {
             lock (instance)
