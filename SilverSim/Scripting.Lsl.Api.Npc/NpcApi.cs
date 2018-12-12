@@ -402,6 +402,20 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             }
         }
 
+        [APILevel(APIFlags.OSSL, "osNpcSayTo")]
+        [APILevel(APIFlags.ASSL, "npcSayTo")]
+        public void NpcSayTo(ScriptInstance instance, LSLKey npc, LSLKey target, string message)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoSayTo(target.AsUUID, message);
+                }
+            }
+        }
+
         [APILevel(APIFlags.OSSL, "osNpcSay")]
         [APILevel(APIFlags.ASSL, "npcSay")]
         public void NpcSay(ScriptInstance instance, LSLKey npc, int channel, string message)
@@ -412,6 +426,20 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
                 {
                     npcAgent.DoSay(channel, message);
+                }
+            }
+        }
+
+        [APILevel(APIFlags.OSSL, "osNpcSayTo")]
+        [APILevel(APIFlags.ASSL, "npcSayTo")]
+        public void NpcSayTo(ScriptInstance instance, LSLKey npc, LSLKey target, int channel, string message)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoSayTo(target.AsUUID, channel, message);
                 }
             }
         }
@@ -430,6 +458,20 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             }
         }
 
+        [APILevel(APIFlags.OSSL, "osNpcShoutTo")]
+        [APILevel(APIFlags.ASSL, "npcShoutTo")]
+        public void NpcShoutTo(ScriptInstance instance, LSLKey npc, LSLKey target, string message)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoShoutTo(target.AsUUID, message);
+                }
+            }
+        }
+
         [APILevel(APIFlags.OSSL, "osNpcShout")]
         [APILevel(APIFlags.ASSL, "npcShout")]
         public void NpcShout(ScriptInstance instance, LSLKey npc, int channel, string message)
@@ -440,6 +482,20 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
                 {
                     npcAgent.DoShout(channel, message);
+                }
+            }
+        }
+
+        [APILevel(APIFlags.OSSL, "osNpcShoutTo")]
+        [APILevel(APIFlags.ASSL, "npcShoutTo")]
+        public void NpcShoutTo(ScriptInstance instance, LSLKey npc, LSLKey target, int channel, string message)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoShoutTo(target.AsUUID, channel, message);
                 }
             }
         }
@@ -458,6 +514,20 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
             }
         }
 
+        [APILevel(APIFlags.OSSL, "osNpcWhisperTo")]
+        [APILevel(APIFlags.ASSL, "npcWhisperTo")]
+        public void NpcWhisperTo(ScriptInstance instance, LSLKey npc, LSLKey target, string message)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoWhisperTo(target.AsUUID, message);
+                }
+            }
+        }
+
         [APILevel(APIFlags.OSSL, "osNpcWhisper")]
         [APILevel(APIFlags.ASSL, "npcWhisper")]
         public void NpcWhisper(ScriptInstance instance, LSLKey npc, int channel, string message)
@@ -468,6 +538,20 @@ namespace SilverSim.Scripting.Lsl.Api.Npc
                 if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
                 {
                     npcAgent.DoWhisper(channel, message);
+                }
+            }
+        }
+
+        [APILevel(APIFlags.OSSL, "osNpcWhisperTo")]
+        [APILevel(APIFlags.ASSL, "npcWhisperTo")]
+        public void NpcWhisperTo(ScriptInstance instance, LSLKey npc, LSLKey target, int channel, string message)
+        {
+            NpcAgent npcAgent;
+            lock (instance)
+            {
+                if (TryGetNpc(instance, npc.AsUUID, out npcAgent))
+                {
+                    npcAgent.DoWhisperTo(target.AsUUID, channel, message);
                 }
             }
         }
